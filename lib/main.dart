@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(BytebankApp());
 
-class ListaTransferencias extends StatelessWidget{
+class TransferList extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,8 +17,16 @@ class ListaTransferencias extends StatelessWidget{
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
-        child: Icon(Icons.add),
+
+          child: Icon(Icons.add), onPressed: () {
+          final Future<Transfer> future = Navigator.push(context, MaterialPageRoute(builder: (context){
+            return TransferForm();
+          }));
+          future.then((transferReceived){
+            debugPrint('Chegou no then do Future');
+            debugPrint('$transferReceived');
+          });
+        },
       ),
     );
   }
@@ -72,7 +80,7 @@ class TransferForm extends StatelessWidget {
           RaisedButton(
               child: Text('Confirmar'),
               onPressed: () {
-                _CreateTransfer(_controllerNumberAccount, _controllerValue);
+                _CreateTransfer(_controllerNumberAccount, _controllerValue, context);
 
               }
           ),
@@ -118,19 +126,22 @@ class BytebankApp extends StatelessWidget{
     // TODO: implement build
     return MaterialApp(
       home: Scaffold(
-        body: TransferForm(),
+        body: TransferList(),
       ),
     );
   }
 }
 
-void _CreateTransfer(TextEditingController controllerNumberAccount, TextEditingController controllerValue){
+void _CreateTransfer(TextEditingController controllerNumberAccount, TextEditingController controllerValue, BuildContext context){
   final int numberAccount =
   int.tryParse(controllerNumberAccount.text);
   final double value =
   double.tryParse(controllerValue.text);
   if(numberAccount != null && value != null) {
     final createTransfer = Transfer(value, numberAccount);
+    debugPrint('Criando Transferência');
     debugPrint('$createTransfer');
+    Navigator.pop(context, createTransfer);
+
   }
 }
