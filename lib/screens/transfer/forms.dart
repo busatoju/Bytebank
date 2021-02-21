@@ -2,6 +2,16 @@ import 'package:bytebank/components/editor.dart';
 import 'package:bytebank/models/transfer.dart';
 import 'package:flutter/material.dart';
 
+const  String _titleAppBar = 'Transferir';
+
+const String _labelNumberAccount = 'Número da conta';
+const String _tipNumberAccount = '0000000';
+
+const String _labelValue = 'Valor';
+const String _tipValue = '0.00';
+
+const String _confirmation = 'Confirmar';
+
 class TransferForm extends StatefulWidget {
   final TextEditingController _controllerNumberAccount =
   TextEditingController();
@@ -20,21 +30,21 @@ class TransferFormState extends State<TransferForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Transferir')),
+          title: Text(_titleAppBar)),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Editor(controller: widget._controllerNumberAccount,
-                tip: '0000000',
-                label: 'Número da conta',
+                tip: _tipNumberAccount,
+                label: _labelNumberAccount,
                 icon: Icons.account_balance),
             Editor(controller: widget._controllerValue,
-                tip: '0.00',
-                label: 'Valor',
+                tip: _tipValue,
+                label: _labelValue,
                 icon: Icons.monetization_on),
 
             RaisedButton(
-                child: Text('Confirmar'),
+                child: Text(_confirmation),
                 onPressed: () {
                   _createTransfer(
                       widget._controllerNumberAccount, widget._controllerValue, context);

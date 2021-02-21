@@ -1,7 +1,7 @@
 import 'package:bytebank/models/transfer.dart';
 import 'package:bytebank/screens/transfer/forms.dart';
 import 'package:flutter/material.dart';
-
+const String _titleAppBar = 'Transferências';
 class TransferList extends StatefulWidget{
 
   final List<Transfer> _transfer = List();
@@ -19,37 +19,35 @@ class TransferListState extends State<TransferList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text('Transferências')
-        ),
-        body: ListView.builder(
-          itemCount: widget._transfer.length,
-          itemBuilder: (context, index) {
-            final transfer = widget._transfer[index];
-            return ItemTransfer(transfer);
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add), onPressed: () {
-          final Future<Transfer> future = Navigator.push(
-              context, MaterialPageRoute(builder: (context) {
-            return TransferForm();
-          }));
-          future.then((transferReceived) {
-            debugPrint('Chegou no then do Future');
-            debugPrint('$transferReceived');
-            Future.delayed(Duration(seconds: 1), () {
-              if (transferReceived != null) {
-                widget._transfer.add(transferReceived);
-                setState(() {
+      appBar: AppBar(
+          title: Text(_titleAppBar)
+      ),
+      body: ListView.builder(
+        itemCount: widget._transfer.length,
+        itemBuilder: (context, index) {
+          final transfer = widget._transfer[index];
+          return ItemTransfer(transfer);
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add), onPressed: () {
+        final Future<Transfer> future = Navigator.push(
+            context, MaterialPageRoute(builder: (context) {
+          return TransferForm();
+        }));
+        future.then((transferReceived) {
+          Future.delayed(Duration(seconds: 1), () {
+            if (transferReceived != null) {
+              widget._transfer.add(transferReceived);
+              setState(() {
 
-                });
-              }
-            });
-          },
-          );
-        }
-        )
+              });
+            }
+          });
+        },
+        );
+      },
+      ),
     );
   }
 }
