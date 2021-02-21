@@ -19,33 +19,37 @@ class TransferListState extends State<TransferList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text('Transferências')
-      ),
-      body: ListView.builder(
+        appBar: AppBar(
+            title: Text('Transferências')
+        ),
+        body: ListView.builder(
           itemCount: widget._transfer.length,
           itemBuilder: (context, index) {
-        final transfer = widget._transfer[index];
-        return ItemTransfer(transfer);
-      },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add), onPressed: () {
-        final Future<Transfer> future = Navigator.push(
-            context, MaterialPageRoute(builder: (context) {
-          return TransferForm();
-        }));
-        future.then((transferReceived) {
-          debugPrint('Chegou no then do Future');
-          debugPrint('$transferReceived');
-          debugPrint('Teste');
-          widget._transfer.add(transferReceived);
-          setState(() {
+            final transfer = widget._transfer[index];
+            return ItemTransfer(transfer);
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add), onPressed: () {
+          final Future<Transfer> future = Navigator.push(
+              context, MaterialPageRoute(builder: (context) {
+            return TransferForm();
+          }));
+          future.then((transferReceived) {
+            debugPrint('Chegou no then do Future');
+            debugPrint('$transferReceived');
+            Future.delayed(Duration(seconds: 1), () {
+              if (transferReceived != null) {
+                widget._transfer.add(transferReceived);
+                setState(() {
 
-          });
-        });
-      },
-      ),
+                });
+              }
+            });
+          },
+          );
+        }
+        )
     );
   }
 }
@@ -78,35 +82,50 @@ class Transfer {
     return 'Transfer{value: $value, numberAccount: $numberAccount}';
   }
 }
-class TransferForm extends StatelessWidget {
+class TransferForm extends StatefulWidget {
   final TextEditingController _controllerNumberAccount =
   TextEditingController();
   final TextEditingController _controllerValue =
   TextEditingController();
 
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return TransferFormState();
+  }
+
+}
+class TransferFormState extends State<TransferForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: Text('Transferir')),
-      body: Column(
-        children: <Widget>[
-          Editor(controller: _controllerNumberAccount, tip: '0000000', label: 'Número da conta', icon: Icons.account_balance),
-          Editor(controller: _controllerValue, tip: '0.00' , label: 'Valor', icon: Icons.monetization_on),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Editor(controller: widget._controllerNumberAccount,
+                tip: '0000000',
+                label: 'Número da conta',
+                icon: Icons.account_balance),
+            Editor(controller: widget._controllerValue,
+                tip: '0.00',
+                label: 'Valor',
+                icon: Icons.monetization_on),
 
-          RaisedButton(
-              child: Text('Confirmar'),
-              onPressed: () {
-                _createTransfer(_controllerNumberAccount, _controllerValue, context);
-
-              }
-          ),
-        ],
+            RaisedButton(
+                child: Text('Confirmar'),
+                onPressed: () {
+                  _createTransfer(
+                      widget._controllerNumberAccount, widget._controllerValue, context);
+                }
+            ),
+          ],
+        ),
       ),
     );
-
   }
-
 }
 class Editor extends StatelessWidget {
   final TextEditingController controller;
@@ -142,10 +161,14 @@ class BytebankApp extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
-      home: Scaffold(
-        body: TransferList(),
+      theme: ThemeData(primaryColor: Colors.green[900],
+      accentColor: Colors.blue[700],
+      buttonTheme: ButtonThemeData(buttonColor: Colors.blueAccent[700],
+      textTheme: ButtonTextTheme.primary)
       ),
-    );
+
+
+      home:  TransferList());
   }
 }
 
