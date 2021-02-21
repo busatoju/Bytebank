@@ -2,33 +2,32 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(BytebankApp());
 
-class ListaTransferencias extends StatelessWidget{ //Lista de transferências utilizando herdando um widget estatico
+class ListaTransferencias extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-     appBar: AppBar( //Barra azul na parte superior
-         title: Text('Transferências') //Titulo da appbar
-     ),
-     body: Column( //Colunas de Transferências
-       children: <Widget>[
-         ItemTransferencia(Transferencia(100,27665843)),
-         ItemTransferencia(Transferencia(300,27665843)),
-         ItemTransferencia(Transferencia(200,27665843)),
-       ],
-     ),
-     floatingActionButton: FloatingActionButton( //Botão de adicionar mais uma tranferência
-       onPressed: () {  },
-       child: Icon(Icons.add), // Tipo do botão, no caso o sinal de '+'
-     ),
-   );
+    return Scaffold(
+      appBar: AppBar(
+          title: Text('Transferências')
+      ),
+      body: Column(
+        children: <Widget>[
+          ItemTransfer(Transfer(100,27665843)),
+          ItemTransfer(Transfer(300,27665843)),
+          ItemTransfer(Transfer(200,27665843)),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {  },
+        child: Icon(Icons.add),
+      ),
+    );
   }
 
 }
-class ItemTransferencia extends StatelessWidget { // Item transferência Criado para melhorar a legibilidade do código e reaproveitamento
+class ItemTransfer extends StatelessWidget {
+  final Transfer _transfer;
 
-  final Transferencia _transferencia;
-
-  const ItemTransferencia(this._transferencia);
+  const ItemTransfer(this._transfer);
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +35,30 @@ class ItemTransferencia extends StatelessWidget { // Item transferência Criado 
     return Card(
       child: ListTile(
         leading: Icon(Icons.monetization_on),
-        title: Text(_transferencia.valor.toString()),
-        subtitle: Text(_transferencia.numeroConta.toString()),
+        title: Text(_transfer.value.toString()),
+        subtitle: Text(_transfer.numberAccount.toString()),
       ),
     );
   }
 }
 
-class Transferencia { //Transferência criada para melhorar legibilidade e reaproveitar código
-  final double valor;
-  final int numeroConta;
+class Transfer {
+  final double value;
+  final int numberAccount;
 
-  const Transferencia(this.valor, this.numeroConta);
+  const Transfer(this.value, this.numberAccount);
+
+  @override
+  String toString() {
+    return 'Transfer{value: $value, numberAccount: $numberAccount}';
+  }
 }
-class FormularioTransferencia extends StatelessWidget {
+class TransferForm extends StatelessWidget {
+  final TextEditingController _controllerNumberAccount =
+  TextEditingController();
+  final TextEditingController _controllerValue =
+  TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,53 +66,71 @@ class FormularioTransferencia extends StatelessWidget {
           title: Text('Transferir')),
       body: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              style: TextStyle(
-                fontSize: 24.0,
-              ),
-              decoration: InputDecoration(
-                icon: Icon(Icons.account_balance),
-                labelText: 'Número da conta',
-                  hintText: '00000000',
+          Editor(controller: _controllerNumberAccount, tip: '0000000', label: 'Número da conta', icon: Icons.monetization_on),
+          Editor(controller: _controllerValue, tip: '0.00' , label: 'Valor', icon: Icons.account_balance),
 
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              style: TextStyle(
-                fontSize: 24.0
-              ),
-              decoration: InputDecoration(
-                icon: Icon(Icons.monetization_on),
-                labelText: 'Valor',
-                hintText: '0.00',
-              ),
-                keyboardType: TextInputType.number,
-
-            ),
-          ),
           RaisedButton(
-            child: Text('Confirmar'),
+              child: Text('Confirmar'),
+              onPressed: () {
+                _CreateTransfer(_controllerNumberAccount, _controllerValue);
+
+              }
           ),
         ],
       ),
-       );
+    );
 
   }
+
 }
+class Editor extends StatelessWidget {
+  final TextEditingController controller;
+  final String tip;
+  final String label;
+  final IconData icon;
+
+  Editor({this.controller, this.tip, this.label, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: controller,
+        style: TextStyle(
+          fontSize: 24.0,
+        ),
+        decoration: InputDecoration(
+          icon: Icon(icon),
+          labelText: label,
+          hintText: tip,
+
+        ),
+        keyboardType: TextInputType.number,
+      ),
+    );
+  }
+}
+
 class BytebankApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
-        home: Scaffold(
-        body: FormularioTransferencia(),
-        ),
+      home: Scaffold(
+        body: TransferForm(),
+      ),
     );
+  }
+}
+
+void _CreateTransfer(TextEditingController controllerNumberAccount, TextEditingController controllerValue){
+  final int numberAccount =
+  int.tryParse(controllerNumberAccount.text);
+  final double value =
+  double.tryParse(controllerValue.text);
+  if(numberAccount != null && value != null) {
+    final createTransfer = Transfer(value, numberAccount);
+    debugPrint('$createTransfer');
   }
 }
