@@ -61,8 +61,6 @@ void _createTransfer(TextEditingController _controllerNumberAccount, TextEditing
   final double value = double.tryParse(_controllerValue.text);
   if(numberAccount != null && value != null) {
     final createTransfer = Transfer(value, numberAccount);
-    debugPrint('Criando Transferência');
-    debugPrint('$createTransfer');
     Navigator.pop(context, createTransfer);
 
 
