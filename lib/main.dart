@@ -2,35 +2,52 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(BytebankApp());
 
-class TransferList extends StatelessWidget{
+class TransferList extends StatefulWidget{
+
+  final List<Transfer> _transfer = List();
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return TransferListState();
+  }
+
+}
+
+class TransferListState extends State<TransferList> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: Text('Transferências')
       ),
-      body: Column(
-        children: <Widget>[
-          ItemTransfer(Transfer(100,27665843)),
-          ItemTransfer(Transfer(300,27665843)),
-          ItemTransfer(Transfer(200,27665843)),
-        ],
+      body: ListView.builder(
+          itemCount: widget._transfer.length,
+          itemBuilder: (context, index) {
+        final transfer = widget._transfer[index];
+        return ItemTransfer(transfer);
+      },
       ),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add), onPressed: () {
+        final Future<Transfer> future = Navigator.push(
+            context, MaterialPageRoute(builder: (context) {
+          return TransferForm();
+        }));
+        future.then((transferReceived) {
+          debugPrint('Chegou no then do Future');
+          debugPrint('$transferReceived');
+          debugPrint('Teste');
+          widget._transfer.add(transferReceived);
+          setState(() {
 
-          child: Icon(Icons.add), onPressed: () {
-          final Future<Transfer> future = Navigator.push(context, MaterialPageRoute(builder: (context){
-            return TransferForm();
-          }));
-          future.then((transferReceived){
-            debugPrint('Chegou no then do Future');
-            debugPrint('$transferReceived');
           });
-        },
+        });
+      },
       ),
     );
   }
-
 }
 class ItemTransfer extends StatelessWidget {
   final Transfer _transfer;
@@ -74,13 +91,13 @@ class TransferForm extends StatelessWidget {
           title: Text('Transferir')),
       body: Column(
         children: <Widget>[
-          Editor(controller: _controllerNumberAccount, tip: '0000000', label: 'Número da conta', icon: Icons.monetization_on),
-          Editor(controller: _controllerValue, tip: '0.00' , label: 'Valor', icon: Icons.account_balance),
+          Editor(controller: _controllerNumberAccount, tip: '0000000', label: 'Número da conta', icon: Icons.account_balance),
+          Editor(controller: _controllerValue, tip: '0.00' , label: 'Valor', icon: Icons.monetization_on),
 
           RaisedButton(
               child: Text('Confirmar'),
               onPressed: () {
-                _CreateTransfer(_controllerNumberAccount, _controllerValue, context);
+                _createTransfer(_controllerNumberAccount, _controllerValue, context);
 
               }
           ),
@@ -132,16 +149,15 @@ class BytebankApp extends StatelessWidget{
   }
 }
 
-void _CreateTransfer(TextEditingController controllerNumberAccount, TextEditingController controllerValue, BuildContext context){
-  final int numberAccount =
-  int.tryParse(controllerNumberAccount.text);
-  final double value =
-  double.tryParse(controllerValue.text);
+void _createTransfer(TextEditingController _controllerNumberAccount, TextEditingController _controllerValue, BuildContext context){
+  final int numberAccount = int.tryParse(_controllerNumberAccount.text);
+  final double value = double.tryParse(_controllerValue.text);
   if(numberAccount != null && value != null) {
     final createTransfer = Transfer(value, numberAccount);
     debugPrint('Criando Transferência');
     debugPrint('$createTransfer');
     Navigator.pop(context, createTransfer);
+
 
   }
 }
