@@ -1,8 +1,13 @@
-import 'file:///C:/bytebank/lib/screens/dashboard/dashboard.dart';
-
+import 'package:bytebank/screens/dashboard/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:bytebank/models/balance.dart';
 
-void main() => runApp(BytebankApp());
+void main() => runApp(ChangeNotifierProvider(
+  create: (context) => Balance(0),
+  child: BytebankApp(),
+),
+);
 
 class BytebankApp extends StatelessWidget{
   @override

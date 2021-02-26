@@ -1,9 +1,23 @@
-class Balance{
+import 'package:flutter/material.dart';
 
-  final double value;
+class Balance extends ChangeNotifier{
 
+  double value;
 
   Balance(this.value);
+
+  void add(double value){
+    this.value += value;
+
+    notifyListeners();
+  }
+
+  void withdraw(double value){
+    this.value -= value;
+
+    notifyListeners();
+
+  }
 
   @override
   String toString() {
