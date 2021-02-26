@@ -18,20 +18,19 @@ class Dashboard extends StatelessWidget{
               alignment: Alignment.topCenter,
               child: BalanceCard(),
             ),
-            Consumer<Balance>(
-                builder: (context, balance,child){
-                  return RaisedButton(
-                    child: const Text('Receber depósito'),
-                    onPressed: (){
-                      /*balance.add(10);*/
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context){
-                            return FormWithdraw();
-                          })
-                      );
-                    },);
-                })
+
+            RaisedButton(
+              child: const Text('Receber depósito'),
+              onPressed: (){
+                /*balance.add(10);*/
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context){
+                      return FormWithdraw();
+                    })
+                );
+              },
+            )
           ],
         ));
   }

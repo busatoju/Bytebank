@@ -1,6 +1,7 @@
 import 'package:bytebank/components/editor.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bytebank/models/balance.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 const _title = 'Depósito';
 const _titleConfirmation = 'Confirmar';
@@ -39,7 +40,24 @@ class FormWithdraw extends StatelessWidget{
 
     );
   }
-  void _createWithdraw(context){
-    Navigator.pop(context);
+  _createWithdraw(context){
+
+    final double value = double.tryParse(_controllerValue.text);
+    final validWithdraw = _validadeWithdraw(value);
+
+    if(validWithdraw) {
+      _refreshState(context, value);
+      Navigator.pop(context);
+    }
+  }
+
+  _validadeWithdraw(value){
+    final _filledField = value != null;
+
+    return _filledField;
+  }
+  _refreshState(context, value){
+    Provider.of<Balance>(context, listen: false).add(value);
+
   }
 }
