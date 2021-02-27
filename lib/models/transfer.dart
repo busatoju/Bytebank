@@ -4,8 +4,11 @@ class Transfer {
 
   const Transfer(this.value, this.numberAccount);
 
-  @override
-  String toString() {
-    return 'Transfer{value: $value, numberAccount: $numberAccount}';
+  String toStringValue(){
+    return "R\$ $value";
+  }
+
+  String toStringAccount(){
+    return "Conta: $numberAccount";
   }
 }
