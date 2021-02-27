@@ -1,6 +1,9 @@
 import 'package:bytebank/components/editor.dart';
+import 'package:bytebank/models/Transfers.dart';
+import 'package:bytebank/models/balance.dart';
 import 'package:bytebank/models/transfer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 const  String _titleAppBar = 'Transferir';
 
@@ -12,20 +15,12 @@ const String _tipValue = '0.00';
 
 const String _confirmation = 'Confirmar';
 
-class TransferForm extends StatefulWidget {
-  final TextEditingController _controllerNumberAccount =
-  TextEditingController();
-  final TextEditingController _controllerValue =
-  TextEditingController();
 
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return TransferFormState();
-  }
-}
+class TransferForm extends StatelessWidget {
 
-class TransferFormState extends State<TransferForm> {
+  final TextEditingController _controllerNumberAccount = TextEditingController();
+  final TextEditingController _controllerValue = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,11 +29,11 @@ class TransferFormState extends State<TransferForm> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Editor(controller: widget._controllerNumberAccount,
+            Editor(controller: _controllerNumberAccount,
                 tip: _tipNumberAccount,
                 label: _labelNumberAccount,
                 icon: Icons.account_balance),
-            Editor(controller: widget._controllerValue,
+            Editor(controller: _controllerValue,
                 tip: _tipValue,
                 label: _labelValue,
                 icon: Icons.monetization_on),
@@ -47,7 +42,7 @@ class TransferFormState extends State<TransferForm> {
                 child: Text(_confirmation),
                 onPressed: () {
                   _createTransfer(
-                      widget._controllerNumberAccount, widget._controllerValue, context);
+                      _controllerNumberAccount, _controllerValue, context);
                 }
             ),
           ],
@@ -56,13 +51,28 @@ class TransferFormState extends State<TransferForm> {
     );
   }
 }
-void _createTransfer(TextEditingController _controllerNumberAccount, TextEditingController _controllerValue, BuildContext context){
+void _createTransfer(TextEditingController _controllerNumberAccount, TextEditingController _controllerValue, BuildContext context) {
   final int numberAccount = int.tryParse(_controllerNumberAccount.text);
   final double value = double.tryParse(_controllerValue.text);
-  if(numberAccount != null && value != null) {
-    final createTransfer = Transfer(value, numberAccount);
-    Navigator.pop(context, createTransfer);
 
+  final validTransfer = _validateTransfer(context, numberAccount, value);
 
+  if (validTransfer) {
+    final newTransfer = Transfer(value, numberAccount);
+
+    _refreshState(context, newTransfer, value);
+    Navigator.pop(context);
   }
+}
+_validateTransfer(context, numberAccount, value){
+  final _filledFields = numberAccount != null && value != null;
+  final sufficientBalance = value <= Provider.of<Balance> (context, listen: false).value;
+
+  return _filledFields && sufficientBalance;
+}
+
+_refreshState(context, newTransfer, value){
+  Provider.of<Transfers>(context, listen: false).add(newTransfer);
+  Provider.of<Balance>(context, listen: false).withdraw(value);
+
 }
